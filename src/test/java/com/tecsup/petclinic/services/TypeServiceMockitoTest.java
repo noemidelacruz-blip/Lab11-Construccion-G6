@@ -1,8 +1,14 @@
 package com.tecsup.petclinic.services;
 
+<<<<<<< HEAD
+import com.tecsup.petclinic.dtos.TypePetCountDTO;
+import com.tecsup.petclinic.entities.Type;
+import com.tecsup.petclinic.repositories.PetRepository;
+=======
 import com.tecsup.petclinic.dtos.TypeDTO;
 import com.tecsup.petclinic.entities.Type;
 import com.tecsup.petclinic.exceptions.TypeNotFoundException;
+>>>>>>> origin/main
 import com.tecsup.petclinic.repositories.TypeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -11,6 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+<<<<<<< HEAD
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+=======
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
  * Pruebas unitarias de TypeService usando Mockito (sin base de datos)
  * Grupo 6 -
  */
+>>>>>>> origin/main
 @Slf4j
 @SpringBootTest
 public class TypeServiceMockitoTest {
@@ -28,6 +43,64 @@ public class TypeServiceMockitoTest {
     private TypeService typeService;
 
     @MockitoBean
+<<<<<<< HEAD
+    private TypeRepository typeRepository;
+
+    @MockitoBean
+    private PetRepository petRepository;
+
+    //Reporte de cantidad de mascotas por tipo
+
+    @Test
+    public void testGetPetCountByType() {
+
+        Type perro = Type.builder().id(1).name("Perro").active(true).build();
+        Type gato = Type.builder().id(2).name("Gato").active(true).build();
+
+        Mockito.when(this.typeRepository.findAll())
+                .thenReturn(List.of(perro, gato));
+        Mockito.when(this.petRepository.countByTypeId(1)).thenReturn(3L);
+        Mockito.when(this.petRepository.countByTypeId(2)).thenReturn(1L);
+
+        List<TypePetCountDTO> report = this.typeService.getPetCountByType();
+        log.info("Reporte: {}", report);
+
+        assertEquals(2, report.size());
+        assertEquals("Perro", report.get(0).getTypeName());
+        assertEquals(3L, report.get(0).getPetCount());
+        assertEquals("Gato", report.get(1).getTypeName());
+        assertEquals(1L, report.get(1).getPetCount());
+    }
+
+    //Devuelve lista vacia si no hay tipos
+
+    @Test
+    public void testGetPetCountByType_Empty() {
+
+        Mockito.when(this.typeRepository.findAll())
+                .thenReturn(Collections.emptyList());
+
+        List<TypePetCountDTO> report = this.typeService.getPetCountByType();
+
+        assertNotNull(report);
+        assertTrue(report.isEmpty());
+        Mockito.verify(this.petRepository, Mockito.never()).countByTypeId(Mockito.anyInt());
+    }
+
+    //Eliminar tipo
+
+    @Test
+    public void testDeleteType() {
+
+        Type type = Type.builder().id(10).name("Hamster").active(true).build();
+
+        Mockito.when(this.typeRepository.findById(10))
+                .thenReturn(Optional.of(type));
+
+        assertDoesNotThrow(() -> this.typeService.delete(10));
+
+        Mockito.verify(this.typeRepository).delete(type);
+=======
     private TypeRepository repository;
 
     /**
@@ -119,5 +192,6 @@ public class TypeServiceMockitoTest {
         assertEquals(typeExpected.getName(), type.getName());
         assertEquals(typeExpected.getDescription(), type.getDescription());
         Mockito.verify(this.repository).findById(1);
+>>>>>>> origin/main
     }
 }
