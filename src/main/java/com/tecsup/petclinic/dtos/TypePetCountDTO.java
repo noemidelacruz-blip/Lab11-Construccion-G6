@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Reporte: cantidad de mascotas por tipo.
+ * Fila del reporte de cantidad de mascotas por tipo
  */
 @Data
 @AllArgsConstructor

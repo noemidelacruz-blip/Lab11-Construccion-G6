@@ -8,16 +8,15 @@ import java.util.List;
 
 public interface TypeService {
 
-    TypeDTO create(TypeDTO typeDTO);
+	TypeDTO create(TypeDTO typeDTO);
 
-    TypeDTO update(TypeDTO typeDTO);
+	TypeDTO update(TypeDTO typeDTO);
 
-    void delete(Integer id) throws TypeNotFoundException;
+	void delete(Integer id) throws TypeNotFoundException;
 
-    TypeDTO findById(Integer id) throws TypeNotFoundException;
+	TypeDTO findById(Integer id) throws TypeNotFoundException;
 
-    List<TypeDTO> findAll();
+	List<TypeDTO> findAll();
 
-    // Reporte de cantidad de mascotas por tipo (solo tipos activos)
-    List<TypePetCountDTO> getPetCountByType();
+	List<TypePetCountDTO> getPetCountByType();
 }

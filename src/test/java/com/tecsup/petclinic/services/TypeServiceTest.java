@@ -1,79 +1,124 @@
 package com.tecsup.petclinic.services;
 
-import com.tecsup.petclinic.dtos.TypePetCountDTO;
-import com.tecsup.petclinic.entities.Pet;
-import com.tecsup.petclinic.entities.Type;
+import com.tecsup.petclinic.dtos.TypeDTO;
 import com.tecsup.petclinic.exceptions.TypeNotFoundException;
-import com.tecsup.petclinic.mappers.TypeMapper;
-import com.tecsup.petclinic.repositories.PetRepository;
-import com.tecsup.petclinic.repositories.TypeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+/**
+ * Pruebas unitarias de TypeService contra la base de datos (H2)
+ * Grupo 6 - Integrante A : CRUD básico
+ */
+@SpringBootTest
+@Slf4j
 public class TypeServiceTest {
 
-    @Mock
-    private TypeRepository typeRepository;
+    @Autowired
+    private TypeService typeService;
 
-    @Mock
-    private PetRepository petRepository;
-
-    @Mock
-    private TypeMapper typeMapper;
-
-    @InjectMocks
-    private TypeServiceImpl typeService;
-
-    // ================= Integrante C - Noemi: filtros y errores =================
-
+    /**
+     * Crear un tipo de mascota
+     */
     @Test
-    public void testGetPetCountByType_ExcludeInactive() {
+    public void testCreateType() {
 
-        Type dog = Type.builder().id(2).name("dog").active(true).build();
-        Type snake = Type.builder().id(6).name("snake").active(false).build();
+        String TYPE_NAME = "ferret";
+        String DESCRIPTION = "Small mustelid";
+        String SIZE_CATEGORY = "small";
+        Integer AVERAGE_LIFESPAN = 7;
+        String CARE_LEVEL = "high";
 
-        when(typeRepository.findAll()).thenReturn(List.of(dog, snake));
-        when(petRepository.findByTypeId(2)).thenReturn(List.of(new Pet(), new Pet()));
+        TypeDTO typeDTO = TypeDTO.builder()
+                .name(TYPE_NAME)
+                .description(DESCRIPTION)
+                .active(true)
+                .sizeCategory(SIZE_CATEGORY)
+                .averageLifespan(AVERAGE_LIFESPAN)
+                .careLevel(CARE_LEVEL)
+                .build();
 
-        List<TypePetCountDTO> report = typeService.getPetCountByType();
+        TypeDTO newTypeDTO = this.typeService.create(typeDTO);
 
-        assertEquals(1, report.size());
-        assertEquals("dog", report.get(0).getTypeName());
-        assertEquals(2, report.get(0).getPetCount());
-        assertTrue(report.stream().noneMatch(r -> r.getTypeName().equals("snake")));
-        verify(petRepository, never()).findByTypeId(6);
+        log.info("TYPE CREATED : {}", newTypeDTO);
+
+        assertNotNull(newTypeDTO.getId());
+        assertEquals(TYPE_NAME, newTypeDTO.getName());
+        assertEquals(DESCRIPTION, newTypeDTO.getDescription());
+        assertTrue(newTypeDTO.getActive());
+        assertEquals(SIZE_CATEGORY, newTypeDTO.getSizeCategory());
+        assertEquals(AVERAGE_LIFESPAN, newTypeDTO.getAverageLifespan());
+        assertEquals(CARE_LEVEL, newTypeDTO.getCareLevel());
     }
 
+    /**
+     * Actualizar un tipo de mascota
+     */
     @Test
-    public void testFindTypeById_NotFound() {
+    public void testUpdateType() {
 
-        when(typeRepository.findById(99)).thenReturn(Optional.empty());
+        String TYPE_NAME = "parrot";
+        String DESCRIPTION = "Tropical bird";
 
-        TypeNotFoundException ex = assertThrows(TypeNotFoundException.class,
-                () -> typeService.findById(99));
+        String UP_TYPE_NAME = "parrot2";
+        String UP_DESCRIPTION = "Large tropical bird";
+        Integer UP_AVERAGE_LIFESPAN = 50;
 
-        assertEquals("Type not found...!", ex.getMessage());
-        verify(typeRepository).findById(99);
+        // ------------ Create ---------------
+        TypeDTO typeDTO = TypeDTO.builder()
+                .name(TYPE_NAME)
+                .description(DESCRIPTION)
+                .active(true)
+                .sizeCategory("small")
+                .averageLifespan(40)
+                .careLevel("high")
+                .build();
+
+        TypeDTO typeDTOCreated = this.typeService.create(typeDTO);
+        log.info("TYPE CREATED : {}", typeDTOCreated);
+
+        // ------------ Update ---------------
+        typeDTOCreated.setName(UP_TYPE_NAME);
+        typeDTOCreated.setDescription(UP_DESCRIPTION);
+        typeDTOCreated.setAverageLifespan(UP_AVERAGE_LIFESPAN);
+
+        TypeDTO upgradeTypeDTO = this.typeService.update(typeDTOCreated);
+        log.info("TYPE UPDATED : {}", upgradeTypeDTO);
+
+        // ------------ Validate ---------------
+        //            EXPECTED              ACTUAL
+        assertEquals(typeDTOCreated.getId(), upgradeTypeDTO.getId());
+        assertEquals(UP_TYPE_NAME, upgradeTypeDTO.getName());
+        assertEquals(UP_DESCRIPTION, upgradeTypeDTO.getDescription());
+        assertEquals(UP_AVERAGE_LIFESPAN, upgradeTypeDTO.getAverageLifespan());
     }
 
+    /**
+     * Buscar un tipo existente por ID (datos de data.sql)
+     */
     @Test
-    public void testDeleteType_NotFound() {
+    public void testFindTypeById() {
 
-        when(typeRepository.findById(99)).thenReturn(Optional.empty());
+        Integer ID = 1;
+        String NAME_EXPECTED = "cat";
+        String DESCRIPTION_EXPECTED = "Domestic feline";
 
-        assertThrows(TypeNotFoundException.class, () -> typeService.delete(99));
+        TypeDTO type = null;
 
-        verify(typeRepository, never()).delete(any(Type.class));
+        try {
+            type = this.typeService.findById(ID);
+        } catch (TypeNotFoundException e) {
+            fail(e.getMessage());
+        }
+
+        log.info("TYPE FOUND : {}", type);
+
+        assertEquals(ID, type.getId());
+        assertEquals(NAME_EXPECTED, type.getName());
+        assertEquals(DESCRIPTION_EXPECTED, type.getDescription());
+        assertTrue(type.getActive());
     }
 }

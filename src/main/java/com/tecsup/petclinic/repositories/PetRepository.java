@@ -24,6 +24,9 @@ public interface PetRepository
 	// Fetch pets by ownerId
 	List<Pet> findByOwnerId(int ownerId);
 
+	// Count pets by typeId
+	long countByTypeId(int typeId);
+
 	@Override
 	List<Pet> findAll();
 
