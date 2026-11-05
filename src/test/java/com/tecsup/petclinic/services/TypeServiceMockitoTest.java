@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,5 +50,20 @@ public class TypeServiceMockitoTest {
         assertEquals(3L, report.get(0).getPetCount());
         assertEquals("Gato", report.get(1).getTypeName());
         assertEquals(1L, report.get(1).getPetCount());
+    }
+
+    //Devuelve lista vacia si no hay tipos
+
+    @Test
+    public void testGetPetCountByType_Empty() {
+
+        Mockito.when(this.typeRepository.findAll())
+                .thenReturn(Collections.emptyList());
+
+        List<TypePetCountDTO> report = this.typeService.getPetCountByType();
+
+        assertNotNull(report);
+        assertTrue(report.isEmpty());
+        Mockito.verify(this.petRepository, Mockito.never()).countByTypeId(Mockito.anyInt());
     }
 }
