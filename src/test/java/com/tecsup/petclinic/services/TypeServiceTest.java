@@ -53,4 +53,46 @@ public class TypeServiceTest {
         assertEquals(AVERAGE_LIFESPAN, newTypeDTO.getAverageLifespan());
         assertEquals(CARE_LEVEL, newTypeDTO.getCareLevel());
     }
+
+    /**
+     * Actualizar un tipo de mascota
+     */
+    @Test
+    public void testUpdateType() {
+
+        String TYPE_NAME = "parrot";
+        String DESCRIPTION = "Tropical bird";
+
+        String UP_TYPE_NAME = "parrot2";
+        String UP_DESCRIPTION = "Large tropical bird";
+        Integer UP_AVERAGE_LIFESPAN = 50;
+
+        // ------------ Create ---------------
+        TypeDTO typeDTO = TypeDTO.builder()
+                .name(TYPE_NAME)
+                .description(DESCRIPTION)
+                .active(true)
+                .sizeCategory("small")
+                .averageLifespan(40)
+                .careLevel("high")
+                .build();
+
+        TypeDTO typeDTOCreated = this.typeService.create(typeDTO);
+        log.info("TYPE CREATED : {}", typeDTOCreated);
+
+        // ------------ Update ---------------
+        typeDTOCreated.setName(UP_TYPE_NAME);
+        typeDTOCreated.setDescription(UP_DESCRIPTION);
+        typeDTOCreated.setAverageLifespan(UP_AVERAGE_LIFESPAN);
+
+        TypeDTO upgradeTypeDTO = this.typeService.update(typeDTOCreated);
+        log.info("TYPE UPDATED : {}", upgradeTypeDTO);
+
+        // ------------ Validate ---------------
+        //            EXPECTED              ACTUAL
+        assertEquals(typeDTOCreated.getId(), upgradeTypeDTO.getId());
+        assertEquals(UP_TYPE_NAME, upgradeTypeDTO.getName());
+        assertEquals(UP_DESCRIPTION, upgradeTypeDTO.getDescription());
+        assertEquals(UP_AVERAGE_LIFESPAN, upgradeTypeDTO.getAverageLifespan());
+    }
 }

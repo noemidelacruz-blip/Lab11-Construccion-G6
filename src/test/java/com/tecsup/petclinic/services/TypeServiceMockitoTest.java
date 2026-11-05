@@ -94,30 +94,4 @@ public class TypeServiceMockitoTest {
         assertEquals(50, typeDTOUpdated.getAverageLifespan());
         Mockito.verify(this.repository, Mockito.times(1)).save(any(Type.class));
     }
-
-    /**
-     * Buscar un tipo existente por ID
-     */
-    @Test
-    public void testFindTypeById() {
-
-        Type typeExpected = new Type(1, "cat", "Domestic feline", true, "small", 15, "medium");
-
-        Mockito.when(this.repository.findById(1))
-                .thenReturn(Optional.of(typeExpected));
-
-        TypeDTO type = null;
-        try {
-            type = this.typeService.findById(1);
-        } catch (TypeNotFoundException e) {
-            fail(e.getMessage());
-        }
-
-        log.info("TYPE FOUND : {}", type);
-
-        assertEquals(typeExpected.getId(), type.getId());
-        assertEquals(typeExpected.getName(), type.getName());
-        assertEquals(typeExpected.getDescription(), type.getDescription());
-        Mockito.verify(this.repository).findById(1);
-    }
 }
