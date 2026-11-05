@@ -13,6 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,5 +66,20 @@ public class TypeServiceMockitoTest {
         assertNotNull(report);
         assertTrue(report.isEmpty());
         Mockito.verify(this.petRepository, Mockito.never()).countByTypeId(Mockito.anyInt());
+    }
+
+    //Eliminar tipo
+
+    @Test
+    public void testDeleteType() {
+
+        Type type = Type.builder().id(10).name("Hamster").active(true).build();
+
+        Mockito.when(this.typeRepository.findById(10))
+                .thenReturn(Optional.of(type));
+
+        assertDoesNotThrow(() -> this.typeService.delete(10));
+
+        Mockito.verify(this.typeRepository).delete(type);
     }
 }
