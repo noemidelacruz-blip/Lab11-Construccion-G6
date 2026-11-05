@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Pruebas unitarias de TypeService usando Mockito (sin base de datos)
- * Grupo 6 - Integrante A : CRUD básico
+ * Grupo 6 -
  */
 @Slf4j
 @SpringBootTest
@@ -93,5 +93,31 @@ public class TypeServiceMockitoTest {
         assertEquals(UP_DESCRIPTION, typeDTOUpdated.getDescription());
         assertEquals(50, typeDTOUpdated.getAverageLifespan());
         Mockito.verify(this.repository, Mockito.times(1)).save(any(Type.class));
+    }
+
+    /**
+     * Buscar un tipo existente por ID
+     */
+    @Test
+    public void testFindTypeById() {
+
+        Type typeExpected = new Type(1, "cat", "Domestic feline", true, "small", 15, "medium");
+
+        Mockito.when(this.repository.findById(1))
+                .thenReturn(Optional.of(typeExpected));
+
+        TypeDTO type = null;
+        try {
+            type = this.typeService.findById(1);
+        } catch (TypeNotFoundException e) {
+            fail(e.getMessage());
+        }
+
+        log.info("TYPE FOUND : {}", type);
+
+        assertEquals(typeExpected.getId(), type.getId());
+        assertEquals(typeExpected.getName(), type.getName());
+        assertEquals(typeExpected.getDescription(), type.getDescription());
+        Mockito.verify(this.repository).findById(1);
     }
 }

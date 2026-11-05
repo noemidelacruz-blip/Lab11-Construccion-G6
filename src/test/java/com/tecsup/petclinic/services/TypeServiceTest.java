@@ -95,4 +95,30 @@ public class TypeServiceTest {
         assertEquals(UP_DESCRIPTION, upgradeTypeDTO.getDescription());
         assertEquals(UP_AVERAGE_LIFESPAN, upgradeTypeDTO.getAverageLifespan());
     }
+
+    /**
+     * Buscar un tipo existente por ID (datos de data.sql)
+     */
+    @Test
+    public void testFindTypeById() {
+
+        Integer ID = 1;
+        String NAME_EXPECTED = "cat";
+        String DESCRIPTION_EXPECTED = "Domestic feline";
+
+        TypeDTO type = null;
+
+        try {
+            type = this.typeService.findById(ID);
+        } catch (TypeNotFoundException e) {
+            fail(e.getMessage());
+        }
+
+        log.info("TYPE FOUND : {}", type);
+
+        assertEquals(ID, type.getId());
+        assertEquals(NAME_EXPECTED, type.getName());
+        assertEquals(DESCRIPTION_EXPECTED, type.getDescription());
+        assertTrue(type.getActive());
+    }
 }
